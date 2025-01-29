@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portail Alternance</title>
+    <style>
+        /* Base styles */
+        body {
+            font-family: 'Poppins', sans-serif;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, #f9f9f9, #e6f4f1);
+            color: #333;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* Navigation */
+        nav {
+            background: #fff;
+            padding: 1rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        nav ul {
+            list-style: none;
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+        }
+
+        nav a {
+            text-decoration: none;
+            color: #333;
+            font-weight: 500;
+        }
+
+        /* Forms */
+        .form-container {
+            background: #fff;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            margin: 2rem auto;
+            max-width: 800px;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+
+        input, textarea, select {
+            width: 100%;
+            padding: 0.8rem;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 1rem;
+        }
+
+        button {
+            background: #3498db;
+            color: #fff;
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+
+        button:hover {
+            background: #2980b9;
+        }
+
+        /* Results display */
+        .offers-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 2rem;
+            padding: 2rem;
+        }
+
+        .offer-card {
+            background: #fff;
+            padding: 1.5rem;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .ai-suggestions {
+            background: #f0f9ff;
+            padding: 1rem;
+            border-radius: 5px;
+            margin-top: 1rem;
+        }
+    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+</head>
+<body>
+    <nav>
+        <ul>
+            <li><a href="#" onclick="showSection('search')">Rechercher</a></li>
+            <li><a href="#" onclick="showSection('post-offer')">Déposer une offre</a></li>
+            <li><a href="#" onclick="showSection('submit-cv')">Déposer un CV</a></li>
+        </ul>
+    </nav>
+
+    <div class="container">
+        <!-- Offer submission form -->
+        <div id="post-offer" class="form-container" style="display: none;">
+            <h2>Déposer une offre d'alternance</h2>
+            <form id="offer-form" onsubmit="submitOffer(event)">
+                <div class="form-group">
+                    <label for="company">Entreprise</label>
+                    <input type="text" id="company" required>
+                </div>
+                <div class="form-group">
+                    <label for="position">Poste</label>
+                    <input type="text" id="position" required>
+                </div>
+                <div class="form-group">
+                    <label for="description">Description</label>
+                    <textarea id="description" rows="5" required></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="requirements">Prérequis</label>
+                    <textarea id="requirements" rows="3" required></textarea>
+                </div>
+                <button type="submit">Publier l'offre</button>
+                <div id="ai-offer-suggestions" class="ai-suggestions"></div>
+            </form>
+        </div>
+
+        <!-- CV submission form -->
+        <div id="submit-cv" class="form-container" style="display: none;">
+            <h2>Déposer votre CV</h2>
+            <form id="cv-form" onsubmit="submitCV(event)">
+                <div class="form-group">
+                    <label for="name">Nom complet</label>
+                    <input type="text" id="name" required>
+                </div>
+                <div class="form-group">
+                    <label for="education">Formation</label>
+                    <input type="text" id="education" required>
+                </div>
+                <div class="form-group">
+                    <label for="experience">Expérience</label>
+                    <textarea id="experience" rows="4" required></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="skills">Compétences</label>
+                    <textarea id="skills" rows="3" required></textarea>
+                </div>
+                <button type="submit">Soumettre le CV</button>
+                <div id="ai-cv-suggestions" class="ai-suggestions"></div>
+            </form>
+        </div>
+
+        <!-- Search section -->
+        <div id="search" class="form-container">
+            <h2>Offres d'alternance disponibles</h2>
+            <div id="offers" class="offers-container">
+                <!-- Offers will be inserted here -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+// Sample offers data
+const sampleOffers = [
+    {
+        company: "TechCorp",
+        position: "Développeur Full Stack",
+        description: "Alternance en développement web avec React et Node.js",
+        requirements: "Bac+3 en informatique, connaissances en JavaScript"
+    },
+    {
+        company: "DataTech",
+        position: "Data Scientist Junior",
+        description: "Alternance en analyse de données et machine learning",
+        requirements: "Bac+4/5 en data science, connaissances en Python et SQL"
+    }
+];
+
+// Show/hide sections
+function showSection(sectionId) {
+    document.getElementById('search').style.display = 'none';
+    document.getElementById('post-offer').style.display = 'none';
+    document.getElementById('submit-cv').style.display = 'none';
+    document.getElementById(sectionId).style.display = 'block';
+}
+
+// Initialize offers display
+function displayOffers() {
+    const offersContainer = document.getElementById('offers');
+    offersContainer.innerHTML = sampleOffers.map(offer => `
+        <div class="offer-card">
+            <h3>${offer.position}</h3>
+            <p><strong>${offer.company}</strong></p>
+            <p>${offer.description}</p>
+            <p><strong>Prérequis:</strong> ${offer.requirements}</p>
+            <button onclick="applyToOffer('${offer.company}')">Postuler</button>
+        </div>
+    `).join('');
+}
+
+// Gemini API integration
+async function getGeminiSuggestions(content, type) {
+    try {
+        const baseUrl = 'http://localhost:5000';
+        const endpoint = type === 'CV' ? '/api/analyze-cv' : '/api/analyze-offer';
+        
+        const response = await fetch(`${baseUrl}${endpoint}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(
+                type === 'CV' ? {
+                    name: document.getElementById('name').value,
+                    education: document.getElementById('education').value,
+                    experience: document.getElementById('experience').value,
+                    skills: document.getElementById('skills').value
+                } : {
+                    company: document.getElementById('company').value,
+                    position: document.getElementById('position').value,
+                    description: document.getElementById('description').value,
+                    requirements: document.getElementById('requirements').value
+                }
+            )
+        });
+
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const data = await response.json();
+        return data.analysis;
+    } catch (error) {
+        console.error('Error getting analysis:', error);
+        return `Une erreur s'est produite lors de l'analyse. Erreur: ${error.message}`;
+    }
+}
+
+// Form submission handlers
+async function submitOffer(event) {
+    event.preventDefault();
+    const description = document.getElementById('description').value;
+    const suggestions = await getGeminiSuggestions(description, 'job offer');
+    document.getElementById('ai-offer-suggestions').innerHTML = `
+        <h4>Suggestions d'amélioration :</h4>
+        <p>${suggestions}</p>
+    `;
+    // Add offer to display
+    sampleOffers.push({
+        company: document.getElementById('company').value,
+        position: document.getElementById('position').value,
+        description: description,
+        requirements: document.getElementById('requirements').value
+    });
+    displayOffers();
+}
+
+async function submitCV(event) {
+    event.preventDefault();
+    const experience = document.getElementById('experience').value;
+    const suggestions = await getGeminiSuggestions(experience, 'CV');
+    document.getElementById('ai-cv-suggestions').innerHTML = `
+        <h4>Suggestions d'amélioration :</h4>
+        <p>${suggestions}</p>
+    `;
+    alert('CV soumis avec succès !');
+}
+
+function applyToOffer(company) {
+    alert(`Candidature envoyée à ${company}`);
+}
+
+// Initialize page when DOM is loaded
+document.addEventListener('DOMContentLoaded', () => {
+    displayOffers();
+});
+    </script>
+</body>
+</html>
