@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Offres d'Alternance en France</title>
+</head>
+<body>
+    <h1>Offres d'Alternance Disponibles</h1>
+    <ul>
+        {% for offer in offers %}
+        <li>
+            <h2>{{ offer.title }}</h2>
+            <p>{{ offer.description }}</p>
+            <p>Lien : <a href="{{ offer.url }}" target="_blank">{{ offer.url }}</a></p>
+        </li>
+        {% endfor %}
+    </ul>
+</body>
+</html>
