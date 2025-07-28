@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Déposer une annonce</title>
+  <link rel="stylesheet" href="deposer-une-annonce.css">
+</head>
+<body>
+  <header class="hero">
+    <h1>Déposer une offre</h1>
+    <p>Publiez votre opportunité d'alternance ou de stage en un clic.</p>
+  </header>
+
+  <main class="form-container">
+    <form>
+      <div class="form-group">
+        <label for="company">Entreprise</label>
+        <input type="text" id="company" required>
+      </div>
+      <div class="form-group">
+        <label for="position">Poste</label>
+        <input type="text" id="position" required>
+      </div>
+      <div class="form-group">
+        <label for="description">Description</label>
+        <textarea id="description" rows="4" required></textarea>
+      </div>
+      <div class="form-group">
+        <label for="requirements">Prérequis</label>
+        <textarea id="requirements" rows="3" required></textarea>
+      </div>
+      <button type="submit">Publier l'annonce</button>
+    </form>
+  </main>
+
+  <footer>
+    <p>&copy; 2025 Job Students</p>
+  </footer>
+</body>
+</html>
